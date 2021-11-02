@@ -1,0 +1,17 @@
+cargo-features = ["strip"]
+
+[package]
+name = "ncnn-waifu2x-rust"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[profile.release]
+strip = true
+lto = true
+
+[build-dependencies]
+bindgen = "*"
+
+[dependencies]
+libc = "*"

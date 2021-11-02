@@ -1,0 +1,4 @@
+/target/
+/ncnn-20210720-ubuntu-1804/
+/noise0_scale2.0x_model.*
+/src/bindings.rs
