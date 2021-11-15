@@ -1,10 +1,13 @@
 use crate::bindings::*;
 
 use std::ffi::{CStr, CString};
+use std::os::raw::c_int;
 
 pub(crate) fn version() -> &'static str {
     unsafe { CStr::from_ptr(ncnn_version()) }.to_str().unwrap()
 }
+
+pub(crate) type NetResult = Result<(), i32>;
 
 pub(crate) struct Net(*mut __ncnn_net_t);
 
@@ -15,19 +18,19 @@ impl Net {
         }
     }
 
-    pub(crate) fn load_param(&mut self, path: &str) -> Result<(), i32> {
+    pub(crate) fn load_param(&mut self, path: &str) -> NetResult {
         let path = CString::new(path).unwrap();
         let errno = unsafe { ncnn_net_load_param(self.0, path.as_ptr()) };
-        if errno == 0 {
-            Ok(())
-        } else {
-            Err(errno)
-        }
+        Self::errno_to_result(errno)
     }
 
-    pub(crate) fn load_model(&mut self, path: &str) -> Result<(), i32> {
+    pub(crate) fn load_model(&mut self, path: &str) -> NetResult {
         let path = CString::new(path).unwrap();
         let errno = unsafe { ncnn_net_load_model(self.0, path.as_ptr()) };
+        Self::errno_to_result(errno)
+    }
+
+    fn errno_to_result(errno: c_int) -> NetResult {
         if errno == 0 {
             Ok(())
         } else {
